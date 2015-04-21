@@ -62,18 +62,32 @@ class ItemSearchController(controller.CementBaseController):
         aws_access_key_id = self.app.config.get('default', 'aws_access_key_id')
         aws_secret_access_key = self.app.config.get('default', 'aws_secret_access_key')
         aws_associate_tag = self.app.config.get('default', 'AWS_SECRET_ACCESS_KEY')
+        max_pages=10
+
 
         self.app.log.info("Inside item-search.default function.")
         amazon = Amazon(aws_access_key_id, aws_secret_access_key, aws_associate_tag, Parser=BeautifulSoup)
         keywords = self.app.pargs.keywords
+        response = amazon.ItemSearch(Keywords=keywords, SearchIndex="Shoes", BrowseNode="679286011")
+        total_pages = int(response.find('totalpages').string)
+        print(total_pages)
+
         if(self.app.pargs.output and self.app.pargs.output == 'titles'):
-            response = amazon.ItemSearch(Keywords=keywords, SearchIndex="Shoes", BrowseNode="679286011")
             titles = response.find_all('title')
             for title in titles:
                 print(title.string)
         else:
-            response = amazon.ItemSearch(Keywords=keywords, SearchIndex="Shoes", BrowseNode="679286011")
-            print(response)
+            print(response.prettify())
+
+        for page_num in range(2, max_pages):
+            response = amazon.ItemSearch(Keywords=keywords, SearchIndex="Shoes", BrowseNode="679286011", ItemPage=page_num)
+
+            if(self.app.pargs.output and self.app.pargs.output == 'titles'):
+                titles = response.find_all('title')
+                for title in titles:
+                    print(title.string)
+            else:
+                print(response.prettify())
 
 
 class AwsProdApp(foundation.CementApp):
