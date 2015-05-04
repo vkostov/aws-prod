@@ -20,7 +20,12 @@ def next_tag(output=True):
         tag = tag + buffer[0]
         buffer = buffer[1:]
     buffer = buffer[1:]
-    return tag[1:]
+    match = re.search('\<(\w+)', tag)
+    if match:
+        tagName = match.group(1)
+    else:
+        tagName = tag[1:]
+    return tagName
 
 
 def contentUntil(searchString):
