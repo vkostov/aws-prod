@@ -15,6 +15,9 @@ aws-prod v%s
 defaults = init_defaults('aws-prod')
 defaults['aws-prod']['debug'] = False
 
+BROWSE_NODE_ID_WOMEN_SHOES = "679360011"
+BROWSE_NODE_ID_MEN_SHOES = "679286011"
+
 # define app base controller
 
 class AwsProdBaseController(controller.CementBaseController):
@@ -68,9 +71,8 @@ class ItemSearchController(controller.CementBaseController):
         self.app.log.info("Inside item-search.default function.")
         amazon = Amazon(aws_access_key_id, aws_secret_access_key, aws_associate_tag, Parser=BeautifulSoup)
         keywords = self.app.pargs.keywords
-        response = amazon.ItemSearch(Keywords=keywords, SearchIndex="Shoes", BrowseNode="679286011")
+        response = amazon.ItemSearch(Keywords=keywords, SearchIndex="Shoes", BrowseNode=BROWSE_NODE_ID_WOMEN_SHOES)
         total_pages = int(response.find('totalpages').string)
-        print(total_pages)
 
         if(self.app.pargs.output and self.app.pargs.output == 'titles'):
             titles = response.find_all('title')
@@ -80,7 +82,7 @@ class ItemSearchController(controller.CementBaseController):
             print(response.prettify())
 
         for page_num in range(2, max_pages):
-            response = amazon.ItemSearch(Keywords=keywords, SearchIndex="Shoes", BrowseNode="679286011", ItemPage=page_num)
+            response = amazon.ItemSearch(Keywords=keywords, SearchIndex="Shoes", BrowseNode=BROWSE_NODE_ID_WOMEN_SHOES, ItemPage=page_num)
 
             if(self.app.pargs.output and self.app.pargs.output == 'titles'):
                 titles = response.find_all('title')
